@@ -1,6 +1,10 @@
 package se.bbs.service;
 
 import org.bytedeco.javacpp.Loader;
+import org.bytedeco.javacpp.Pointer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import se.bbs.commons.Classifier;
 
@@ -10,11 +14,16 @@ import java.net.URL;
 import java.util.Objects;
 import java.util.Optional;
 
+import static org.bytedeco.javacpp.opencv_core.cvLoad;
+
 @Service
 public class ClassifierResolver {
 
-    public String get(String classifier){
-        return fromDisk(classifier).getAbsolutePath();
+    @Autowired
+    private ResourceLoader resourceLoader;
+
+    public Pointer get(String classifier){
+        return cvLoad(fromDisk(classifier).getAbsolutePath());
     }
 
     private File fromDisk(String name) {
@@ -34,6 +43,13 @@ public class ClassifierResolver {
     }
 
     private String getFilePath(String name) {
-        return this.getClass().getResource(name).getFile();
+        try {
+            return resourceLoader.getResource("classpath:haar_classifier/" + name)
+                    .getFile()
+                    .getAbsolutePath();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

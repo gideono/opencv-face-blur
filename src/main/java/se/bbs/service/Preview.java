@@ -2,45 +2,42 @@ package se.bbs.service;
 
 import org.bytedeco.javacv.CanvasFrame;
 import org.bytedeco.javacv.Frame;
-import org.bytedeco.javacv.FrameGrabber;
-import org.bytedeco.javacv.OpenCVFrameGrabber;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 
+import javax.swing.*;
+
+import static java.lang.Double.valueOf;
+
+@Service
 public class Preview {
 
+    @Value("app.preview.title")
     private String title;
-    private int width;
-    private int height;
-
-    private Camera camera;
     private CanvasFrame canvas;
 
-    public Preview(int width, int height, Camera camera) {
-        this.width = width;
-        this.height = height;
-        this.camera = camera;
+    public Preview() {
+        canvas = new CanvasFrame(title);
+        canvas.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
-    public Preview(String title, int width, int height, Camera camera) {
-        this.title = title;
-        this.width = width;
-        this.height = height;
-        this.camera = camera;
+    public void show(Frame image) {
+        canvas.showImage(image);
     }
 
-    public void show() {
-        canvas = new CanvasFrame(Optional.of(title).orElse("Preview"));
+    public void show(Frame image, double frameRate) {
+        long pause = (long) (1000 / (frameRate == 0 ? 10 : frameRate));
+        System.out.println(pause);
         try {
-            OpenCVFrameGrabber cameraSource = camera.getWebCameSource();
-            cameraSource.setImageWidth(width);
-            cameraSource.setImageHeight(height);
-            cameraSource.start();
-
-            Frame image = cameraSource.grab();
-            canvas.setCanvasSize(width, height);
-        } catch (FrameGrabber.Exception e) {
+            Thread.sleep(pause);
+            show(image);
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    private void setup() {
+
     }
 }

@@ -1,0 +1,9 @@
+se/bbs/service/Camera.class
+se/bbs/service/ClassifierResolver.class
+se/bbs/configuration/Configuration.class
+se/bbs/support/Image.class
+se/bbs/api/FaceDetection.class
+se/bbs/commons/Classifier.class
+se/bbs/service/Preview.class
+se/bbs/support/Rectangle.class
+se/bbs/Application.class
