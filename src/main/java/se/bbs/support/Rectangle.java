@@ -12,15 +12,18 @@ import static org.bytedeco.javacpp.opencv_imgproc.cvRectangle;
 
 @Component
 public class Rectangle {
-    public void draw(opencv_core.CvSeq seq, opencv_core.IplImage image){
-        IntStream.of(0, seq.total())
-                .mapToObj(i -> cvGetSeqElem(seq, i))
-                .map(opencv_core.CvRect::new)
-                .forEach(rect -> draw(rect, image));
+    public void draw(opencv_core.CvSeq seq, opencv_core.IplImage image) {
+        int total = seq.total();
+        if (total > 0) {
+            IntStream.of(0, total)
+                    .mapToObj(i -> cvGetSeqElem(seq, i))
+                    .map(opencv_core.CvRect::new)
+                    .forEach(rect -> draw(rect, image));
+        }
     }
 
     private void draw(opencv_core.CvRect r, opencv_core.IplImage image) {
-        if (r != null){
+        if (r != null) {
             int x = r.x();
             int y = r.y();
             int w = r.width();

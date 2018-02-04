@@ -10,7 +10,7 @@ public class Image {
         return opencv_core.IplImage.create(image.width(), image.height(), IPL_DEPTH_8U, 1);
     }
 
-    public static void changeColorSpace(opencv_core.IplImage source, opencv_core.IplImage target, int encoding){
+    public static void changeColorSpace(opencv_core.IplImage source, opencv_core.IplImage target, int encoding) {
         cvCvtColor(source, target, encoding);
     }
 }

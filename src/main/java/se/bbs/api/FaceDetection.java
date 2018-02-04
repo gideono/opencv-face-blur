@@ -50,7 +50,6 @@ public class FaceDetection {
             changeColorSpace(image, gray, CV_BGR2GRAY);
             opencv_core.CvMemStorage storage = opencv_core.CvMemStorage.create();
             opencv_core.CvSeq faces = detect(gray, storage, 1.1, 3);
-            System.out.println(faces.total());
             rectangle.draw(faces, image);
             preview.show(converter.convert(image));
             cvClearMemStorage(storage);
