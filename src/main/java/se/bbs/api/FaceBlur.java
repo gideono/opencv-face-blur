@@ -9,8 +9,12 @@ import se.bbs.service.Camera;
 import se.bbs.service.Preview;
 import se.bbs.support.Rectangle;
 
-import static org.bytedeco.javacpp.opencv_core.cvClearMemStorage;
+import java.util.List;
+
+import static org.bytedeco.javacpp.opencv_core.*;
 import static org.bytedeco.javacpp.opencv_imgproc.CV_BGR2GRAY;
+import static org.bytedeco.javacpp.opencv_imgproc.CV_GAUSSIAN;
+import static org.bytedeco.javacpp.opencv_imgproc.cvSmooth;
 import static se.bbs.support.Image.changeColorSpace;
 import static se.bbs.support.Image.gray;
 
@@ -37,14 +41,25 @@ public class FaceBlur {
         while (true) {
             cvClearMemStorage(storage);
             opencv_core.IplImage image = converter.convert(camera.grab());
+            opencv_core.IplImage org = cvCloneImage(image);
             opencv_core.IplImage gray = gray(image);
             changeColorSpace(image, gray, CV_BGR2GRAY);
             opencv_core.CvSeq faces = faceDetection.detect(gray, storage, 1.1, 3);
-            rectangle.draw(faces, image);
-            preview.show(converter.convert(image));
-            cvClearMemStorage(storage);
-            preview.show(converter.convert(image));
-
+            int total = faces.total();
+            if (total > 0) {
+                System.out.println(total);
+                //todo us ellipse
+                List<opencv_core.CvRect> rects = rectangle.getRect(faces);
+                rects.forEach(r -> {
+                    opencv_core.IplImage face = cvCreateImage(new opencv_core.CvSize(r.width(), r.height()), org.depth(), org.nChannels());
+                    cvSetImageROI(org, r);
+                    cvCopy(org, face, null);
+                    cvSmooth(face, face, CV_GAUSSIAN, 51, 51, 0, 0);
+                    cvAdd(org, face, org);
+//                    preview.show(converter.convert(org));
+                });
+            }
+            preview.show(converter.convert(org));
         }
     }
 }
